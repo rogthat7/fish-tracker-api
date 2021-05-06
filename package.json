@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start-gendoc": "node swagger/swagger.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js"
   },
@@ -13,7 +14,11 @@
   "dependencies": {
     "dotenv": "^9.0.0",
     "express": "^4.17.1",
-    "mongoose": "^5.12.7"
+    "mongodb": "^3.6.6",
+    "mongoose": "^5.12.7",
+    "swagger-autogen": "^2.8.1",
+    "swagger-jsdoc": "^5.0.1",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"
