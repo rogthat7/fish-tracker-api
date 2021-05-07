@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Express API for JSONPlaceholder",
+    "title": "Express API for FishTrackerApp",
     "version": "1.0.0",
     "description": ""
   },

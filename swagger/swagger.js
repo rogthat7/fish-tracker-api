@@ -2,7 +2,7 @@ const swaggerAutogen = require('swagger-autogen')();
 
 const swaggerDefinition = {
     info: {
-      title: 'Express API for JSONPlaceholder',
+      title: 'Express API for FishTrackerApp',
       version: '1.0.0',
     },
     host: "localhost:3000",
