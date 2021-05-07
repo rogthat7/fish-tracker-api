@@ -9,7 +9,8 @@
   "basePath": "/api/users",
   "tags": [],
   "schemes": [
-    "http"
+    "http",
+    "https"
   ],
   "securityDefinitions": {
     "api_key": {

@@ -22,7 +22,7 @@ const swaggerDefinition = {
           }
       }
   },
-    schemes: ['http'],
+    schemes: ['http','https'],
     consumes: ['application/json'],
     produces: ['application/json'],
     securityDefinitions: {
