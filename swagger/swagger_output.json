@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": ""
   },
-  "host": "https://fish-tracker-api.herokuapp.com",
+  "host": "fish-tracker-api.herokuapp.com",
   "basePath": "/api/users",
   "tags": [],
   "schemes": [
