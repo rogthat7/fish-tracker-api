@@ -13,10 +13,10 @@
     "https"
   ],
   "securityDefinitions": {
-    "api_key": {
+    "bearerAuth": {
       "type": "apiKey",
-      "name": "api_key",
-      "in": "header"
+      "in": "header",
+      "name": "Authorization"
     }
   },
   "consumes": [
@@ -31,7 +31,11 @@
         "tags": [],
         "description": "",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/{id}": {
@@ -46,7 +50,48 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/gettoken": {
+      "post": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/update/{id}": {
@@ -66,14 +111,27 @@
             "schema": {
               "type": "object",
               "properties": {
-                "isAdmin": {
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "password": {
                   "example": "any"
                 }
               }
             }
           }
         ],
-        "responses": {}
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
       }
     },
     "/delete/{id}": {
@@ -102,10 +160,13 @@
             "schema": {
               "type": "object",
               "properties": {
+                "password": {
+                  "example": "any"
+                },
                 "name": {
                   "example": "any"
                 },
-                "password": {
+                "email": {
                   "example": "any"
                 },
                 "phoneNumber": {
@@ -119,6 +180,9 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Created"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -126,5 +190,10 @@
       }
     }
   },
-  "definitions": {}
+  "definitions": {},
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }
