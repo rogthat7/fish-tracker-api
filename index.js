@@ -3,15 +3,21 @@ const mongoose = require('mongoose');
 const swaggerUi  = require('swagger-ui-express');
 const swaggerFile = require('./swagger/swagger_output.json');
 const usersRoute = require('./routes/users');
+const pjson =  require('./package.json');
 const winston = require('winston');
-const { error } = require('winston');
 require('dotenv').config();
 const app = express();
+
+// Get
+app.get('/api',  async (req, res, next) => {
+    res.send("Welcome to fish-tracker-api v"+pjson.version+"</br>To View Swagger Documentation click <a href= "+req.protocol+"://"+req.headers.host+"/api/swagger> here </a>");
+});
+
 
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
 //craate a logger
@@ -20,10 +26,6 @@ const logger = winston.createLogger({
     format: winston.format.json(),
     defaultMeta: { service: 'user-service' },
     transports: [
-        //
-        // - Write all logs with level `error` and below to `error.log`
-        // - Write all logs with level `info` and below to `combined.log`
-        //
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
         new winston.transports.Console({
             format:winston.format.combine(
@@ -38,7 +40,22 @@ const logger = winston.createLogger({
 
 //routes
 app.use('/api/users',usersRoute);
-    
+
+app.use(async(req,res,next)=>{
+    const error = new Error("No Found");
+    error.status = 404;
+    next(error); 
+});
+
+app.use((err, req, res, next)=>{
+    res.status(err.status || 500);
+    res.send({
+        error:{
+            status:err.status || 500,
+            message:err.message, 
+        },
+    });
+})  
 //connect to mongoDB
 mongoose
     .connect(process.env.MONGODB_URL,{ useNewUrlParser: true, useUnifiedTopology: true })
