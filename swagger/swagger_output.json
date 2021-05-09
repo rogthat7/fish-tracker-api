@@ -6,8 +6,10 @@
     "description": ""
   },
   "host": "fish-tracker-api.herokuapp.com",
-  "basePath": "/api/users",
-  "tags": [],
+  "basePath": "/api",
+  "tags": [
+    "users"
+  ],
   "schemes": [
     "http",
     "https"
@@ -26,9 +28,9 @@
     "application/json"
   ],
   "paths": {
-    "/getusers": {
+    "/users/getusers": {
       "get": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [],
         "responses": {
@@ -38,7 +40,7 @@
         }
       }
     },
-    "/{id}": {
+    "/users/{id}": {
       "get": {
         "tags": [],
         "description": "",
@@ -60,9 +62,9 @@
         }
       }
     },
-    "/gettoken": {
+    "/users/login": {
       "post": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -97,9 +99,9 @@
         }
       }
     },
-    "/update/{id}": {
+    "/users/update/{id}": {
       "patch": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -137,9 +139,9 @@
         }
       }
     },
-    "/delete/{id}": {
+    "/users/delete/{id}": {
       "delete": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -156,9 +158,9 @@
         }
       }
     },
-    "/createuser": {
+    "/users/createuser": {
       "post": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {

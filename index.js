@@ -39,7 +39,7 @@ const logger = winston.createLogger({
     });
 
 //routes
-app.use('/api/users',usersRoute);
+app.use('/api',usersRoute);
 
 app.use(async(req,res,next)=>{
     const error = new Error("No Found");
