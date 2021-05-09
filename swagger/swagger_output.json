@@ -42,7 +42,7 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
