@@ -4,6 +4,7 @@ const swaggerUi  = require('swagger-ui-express');
 const swaggerFile = require('./swagger/swagger_output.json');
 const usersRoute = require('./routes/users');
 const pjson =  require('./package.json');
+const clientTwilio = require('twilio')(process.env.MOBILEOTPACCOUNTID, process.env.MOBILEOTPAUTHTOKEN);
 const winston = require('winston');
 require('dotenv').config();
 const app = express();
@@ -74,3 +75,4 @@ app
         logger.info(`User Secrete ${process.env.SECRETE}`);
     });
 module.exports = logger;
+module.exports = clientTwilio;

@@ -7,9 +7,7 @@
   },
   "host": "fish-tracker-api.herokuapp.com",
   "basePath": "/api",
-  "tags": [
-    "users"
-  ],
+  "tags": [],
   "schemes": [
     "http",
     "https"
@@ -28,9 +26,108 @@
     "application/json"
   ],
   "paths": {
+    "/users/verifywithotp": {
+      "patch": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "otp": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/updateadmin/{id}": {
+      "patch": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "isAdmin": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/users/registerwithotp": {
+      "post": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/users/getusers": {
       "get": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [],
         "responses": {
@@ -42,7 +139,7 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -64,7 +161,7 @@
     },
     "/users/login": {
       "post": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -101,7 +198,7 @@
     },
     "/users/update/{id}": {
       "patch": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -141,7 +238,7 @@
     },
     "/users/delete/{id}": {
       "delete": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -160,7 +257,7 @@
     },
     "/users/createuser": {
       "post": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -179,9 +276,6 @@
                   "example": "any"
                 },
                 "phoneNumber": {
-                  "example": "any"
-                },
-                "isAdmin": {
                   "example": "any"
                 }
               }

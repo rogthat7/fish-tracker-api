@@ -1,6 +1,7 @@
+
 const jwt = require('jsonwebtoken');
 
-exports.Authorized = function (req, res, next) {
+exports.Admin = function (req, res, next) {
     if (!req.headers.authorization) {
         res.status(401).send("Header Missing");
     }
@@ -9,10 +10,10 @@ exports.Authorized = function (req, res, next) {
 
 
     jwt.verify(token, process.env.SECRETE, function (err, payload) {
-        if (err) {
-            console.log(err);
+        if (!payload.isAdmin) {
             res.status(401).send("User Not Authorised");
         }
+        
         next();
     });
 };
