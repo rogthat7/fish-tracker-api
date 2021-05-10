@@ -4,6 +4,7 @@ const swaggerUi  = require('swagger-ui-express');
 const swaggerFile = require('./swagger/swagger_output.json');
 const usersRoute = require('./routes/users');
 const pjson =  require('./package.json');
+var cors = require('cors');
 const clientTwilio = require('twilio')(process.env.MOBILEOTPACCOUNTID, process.env.MOBILEOTPAUTHTOKEN);
 const winston = require('winston');
 require('dotenv').config();
@@ -17,6 +18,7 @@ app.get('/api',  async (req, res, next) => {
 
 //middlewares
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({extended:true}));
 app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
