@@ -7,7 +7,7 @@
   },
   "host": "fish-tracker-api.herokuapp.com",
   "basePath": "/api",
-  "tags": [],
+  "tags": ["Users"],
   "schemes": [
     "http",
     "https"
@@ -27,8 +27,8 @@
   ],
   "paths": {
     "/users/verifywithotp": {
-      "patch": {
-        "tags": [],
+      "post": {
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -45,6 +45,12 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -53,7 +59,7 @@
     },
     "/users/updateadmin/{id}": {
       "patch": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -87,7 +93,7 @@
     },
     "/users/registerwithotp": {
       "post": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -127,7 +133,7 @@
     },
     "/users/getusers": {
       "get": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [],
         "responses": {
@@ -139,7 +145,7 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -161,7 +167,7 @@
     },
     "/users/login": {
       "post": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -198,7 +204,7 @@
     },
     "/users/update/{id}": {
       "patch": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -238,7 +244,7 @@
     },
     "/users/delete/{id}": {
       "delete": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {
@@ -257,7 +263,7 @@
     },
     "/users/createuser": {
       "post": {
-        "tags": [],
+        "tags": ["Users"],
         "description": "",
         "parameters": [
           {

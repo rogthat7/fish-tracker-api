@@ -3,3 +3,4 @@ node_modules
 error.log
 exceptions.log
 rest.http
+.vscode

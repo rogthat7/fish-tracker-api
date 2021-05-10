@@ -14,32 +14,42 @@ const options = {
   issuer: 'roger'
 }
 
-//Updated User Request
-router.patch('/users/verifywithotp', Authorized, async (req, res) => {
+//Verify Sent OTP
+router.post('/users/verifywithotp', Authorized, async (req, res) => {
   const otp = req.body.otp;
-  try {
-    let token = req.headers.authorization.split(' ')[1];
-    jwt.verify(token, process.env.SECRETE, function (err, payload) {
-      if(payload.isConfirmed == true)
-          res.send("User Already Verified");
-      else{
-        clientTwilio
-        .verify
-        .services(process.env.MOBILEOTPSERVICEID)
-        .verificationChecks
-        .create({
-          to: `+${payload.phoneNumber}`,
-          code: req.body.otp
-        }).then((data)=>{
-          user.isConfirmed = true;
-          user.save().then(() => 
-          req.status(200).send(data))
-        });
-      }
-    });
+  try { 
+      let token = req.headers.authorization.split(' ')[1];
+      jwt.verify(token, process.env.SECRETE, function (err, payload) {
+        if(payload.isConfirmed == true)
+            res.send("User Already Verified");
+        else{
+          User.findOne({ email :  payload.email},(err,user)=>{
+            clientTwilio
+            .verify
+            .services(process.env.MOBILEOTPSERVICEID)
+            .verificationChecks
+            .create({
+              to: `+${payload.phoneNumber}`,
+              code: otp
+            }).then((data)=>{
+                if (data.valid) {
+                  user.isConfirmed = true;
+                  user.save().then(() => 
+                  res.status(200).send(data))
+                }
+              else 
+                res.status(400).send(data);
+            }).catch((err)=>{
+              res.send('ErrorTwilio: ' + err);
+            });
+          });
+          
+        }
+      });
     
-  } catch (error) {
-    res.send('ErrorVerify: ' + error);
+  }
+  catch{
+    res.send('ErrorVerify: ' + err);
   }
 });
 
@@ -124,7 +134,7 @@ router.post('/users/login', async (req, res) => {
     User.findOne({ email: req.body.email }).then(
       (user) => {
         if (!user) {
-          return res.status(401).json({
+          return res.status(404).json({
             error: new Error('User not found!')
           });
         }
@@ -136,7 +146,7 @@ router.post('/users/login', async (req, res) => {
               });
             }
             //craete jwt token
-            let jwttoken = jwt.sign({ name: user.name, email: user.email, isAdmin: user.isAdmin, phoneNumber: user.phoneNumber }, process.env.SECRETE, options);
+            let jwttoken = jwt.sign({ name: user.name, email: user.email, isAdmin: user.isAdmin, isConfirmed:user.isConfirmed, phoneNumber: user.phoneNumber }, process.env.SECRETE, options);
             res.status(200).json({
               _token: "bearer " + jwttoken
             });
@@ -204,7 +214,8 @@ router.post('/users/createuser', async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
-        password: hash
+        password: hash,
+        isConfirmed:true
       });
 
       const a1 = await user.save().then(() => {
