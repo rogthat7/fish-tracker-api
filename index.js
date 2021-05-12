@@ -4,16 +4,27 @@ const swaggerUi  = require('swagger-ui-express');
 const swaggerFile = require('./swagger/swagger_output.json');
 const usersRoute = require('./routes/users');
 const pjson =  require('./package.json');
+const { promisify } = require('util');
+const PORT = process.env.PORT || 3000
 var cors = require('cors');
 const clientTwilio = require('twilio')(process.env.MOBILEOTPACCOUNTID, process.env.MOBILEOTPAUTHTOKEN);
 const winston = require('winston');
+const { json } = require('body-parser');
 require('dotenv').config();
 const app = express();
 
 // Get
 app.get('/api',  async (req, res, next) => {
-    res.send("Welcome to fish-tracker-api v"+pjson.version+"</br>To View Swagger Documentation click <a href= "+req.protocol+"://"+req.headers.host+"/api/swagger> here </a>");
-});
+    res.send(
+            JSON.stringify(
+                    {
+                        name:"fish-tracker-api" ,
+                        version: "v"+pjson.version,
+                        swaggerDoc: "To View Swagger Documentation click <a href= "+req.protocol+"://"+req.headers.host+"/api/swagger> here </a>"
+                    }
+                )
+            );
+        });
 
 
 //middlewares
@@ -69,12 +80,11 @@ mongoose
         logger.error("something went wrong connecting to the db",error);
     });
 
-const PORT = process.env.PORT || 3000
+
 
 app
     .listen(PORT, () =>{
         logger.info(`Server started at PORT ${PORT}`);
-        logger.info(`User Secrete ${process.env.SECRETE}`);
     });
 module.exports = logger;
 module.exports = clientTwilio;
