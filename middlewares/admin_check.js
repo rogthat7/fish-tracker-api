@@ -9,7 +9,7 @@ exports.Admin = function (req, res, next) {
     if (!token) res.status(401).send("No Token found");
 
 
-    jwt.verify(token, process.env.SECRETE, function (err, payload) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRETE, function (err, payload) {
         if (!payload.isAdmin) {
             res.status(401).send("User Not Authorised");
         }

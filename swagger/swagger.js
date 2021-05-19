@@ -26,7 +26,7 @@ const swaggerDefinition = {
 };
 
 const outputFile = "./swagger/swagger_output.json";
-const endpointsFiles = ["./routes/users.js"];
+const endpointsFiles = ["./routes/users_route.js", "./routes/auth_route.js"];
 swaggerAutogen(outputFile, endpointsFiles, swaggerDefinition).then(() => {
   require("../index"); // Your project's root file
 });

@@ -1,5 +1,8 @@
 const express = require('express');
-router = express.Router();
+userRouter = express.Router();
+bodyParser = require("body-parser"),
+swaggerJsdoc = require("swagger-jsdoc"),
+swaggerUi = require("swagger-ui-express");
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -8,14 +11,12 @@ require('dotenv').config();
 const clientTwilio = require('twilio')(process.env.MOBILEOTPACCOUNTID, process.env.MOBILEOTPAUTHTOKEN);
 const { Authorized } = require('../middlewares/authorize');  
 const { Admin } = require('../middlewares/admin_check');  
+const { isLoggedin } = require('../middlewares/login_check');  
 const SALT_ROUNDS = 12;
-const options = {
-  expiresIn: '24h',
-  issuer: 'roger'
-}
+
 
 //Verify Sent OTP
-router.post('/users/verifywithotp', Authorized, async (req, res) => {
+userRouter.post('/users/verifywithotp', Authorized, async (req, res) => {
   const otp = req.body.otp;
   try { 
       let token = req.headers.authorization.split(' ')[1];
@@ -40,7 +41,7 @@ router.post('/users/verifywithotp', Authorized, async (req, res) => {
               else 
                 res.status(400).send(data);
             }).catch((err)=>{
-              res.send('ErrorTwilio: ' + err);
+              res.send('Error: ' + err);
             });
           });
           
@@ -49,12 +50,12 @@ router.post('/users/verifywithotp', Authorized, async (req, res) => {
     
   }
   catch{
-    res.send('ErrorVerify: ' + err);
+    res.send('Error: ' + err);
   }
 });
 
 //Updated Admin privilages
-router.patch('/users/updateadmin/:id', Authorized, Admin, async (req, res) => {
+userRouter.patch('/users/updateadmin/:id', isLoggedin, Authorized, Admin, async (req, res) => {
   try {
       const userUpdated = await User.findByIdAndUpdate(req.params.id,
           {
@@ -68,12 +69,12 @@ router.patch('/users/updateadmin/:id', Authorized, Admin, async (req, res) => {
           res.status(404).send("user not found!");
       res.json(userUpdated);
   } catch (error) {
-      res.send('ErrorPatch: ' + error);
+      res.send('Error: ' + error);
   }
 });
 
 // Post: Create New User with otp varification
-router.post('/users/registerwithotp', async (req, res) => {
+userRouter.post('/users/registerwithotp', async (req, res) => {
   try {
     //encrypt the password
     bcrypt.hash(req.body.password, SALT_ROUNDS, async (err, hash) => {
@@ -109,7 +110,7 @@ router.post('/users/registerwithotp', async (req, res) => {
   }
 });
 // Get
-router.get('/users/getusers', Authorized, async (req, res) => {
+userRouter.get('/users/getusers', isLoggedin, Authorized, async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -119,7 +120,7 @@ router.get('/users/getusers', Authorized, async (req, res) => {
 });
 
 // Get by Id 
-router.get('/users/:id', Authorized, async (req, res) => {
+userRouter.get('/users/:id', Authorized, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     res.status(200).json(user);
@@ -128,52 +129,10 @@ router.get('/users/:id', Authorized, async (req, res) => {
   }
 });
 
-// Get Token 
-router.post('/users/login', async (req, res) => {
-  try {
-    User.findOne({ email: req.body.email }).then(
-      (user) => {
-        if (!user) {
-          return res.status(404).json({
-            error: new Error('User not found!')
-          });
-        }
-        bcrypt.compare(req.body.password, user.password).then(
-          (valid) => {
-            if (!valid) {
-              return res.status(401).json({
-                error: new Error('Incorrect password!')
-              });
-            }
-            //craete jwt token
-            let jwttoken = jwt.sign({ name: user.name, email: user.email, isAdmin: user.isAdmin, isConfirmed:user.isConfirmed, phoneNumber: user.phoneNumber }, process.env.SECRETE, options);
-            res.status(200).json({
-              _token: "bearer " + jwttoken
-            });
-          }
-        ).catch(
-          (error) => {
-            res.status(500).json({
-              error: error
-            });
-          }
-        );
-      }
-    ).catch(
-      (error) => {
-        res.status(500).json({
-          error: error
-        });
-      }
-    );
-  } catch (error) {
-    res.status(404).send();
-  }
-});
 
 
 //Updated User Request
-router.patch('/users/update/:id', Authorized, async (req, res) => {
+userRouter.patch('/users/update/:id', isLoggedin, Authorized, async (req, res) => {
   try {
     const userUpdated = await User.findByIdAndUpdate(req.params.id,
       {
@@ -186,15 +145,17 @@ router.patch('/users/update/:id', Authorized, async (req, res) => {
       }
     );
     if (!userUpdated)
-      res.status(404).send("user not found!");
+      res.status(404).send.json({
+        error : "User not found"
+      });
     res.json(userUpdated);
   } catch (error) {
-    res.send('ErrorPatch: ' + error);
+    res.send({Error:  error});
   }
 });
 
 //Delete by Id
-router.delete('/users/delete/:id', Authorized, async (req, res) => {
+userRouter.delete('/users/delete/:id', isLoggedin, Authorized,  async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
@@ -204,9 +165,9 @@ router.delete('/users/delete/:id', Authorized, async (req, res) => {
     res.send('ErrorDelete: ' + error);
   }
 });
-
+// should be a hidden endpoint
 // Post: Create New User
-router.post('/users/createuser', async (req, res) => {
+userRouter.post('/users/createuser',  async (req, res) => {
   try {
     //encrypt the password
     bcrypt.hash(req.body.password, SALT_ROUNDS, async (err, hash) => {
@@ -215,13 +176,14 @@ router.post('/users/createuser', async (req, res) => {
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         password: hash,
-        isConfirmed:true
+        isConfirmed:true,
+        isAdmin:true,
       });
 
-      const a1 = await user.save().then(() => {
-        res.status(201).send(a1);
+      const a1 = await user.save().then((a1) => {
+          res.status(201).send(a1);
       }).catch((error) => {
-        res.status(500).send(error._message);
+        res.status(500).send(error.message);
       });
     });
   }
@@ -231,4 +193,4 @@ router.post('/users/createuser', async (req, res) => {
 });
 
 
-module.exports = router;
+module.exports = userRouter;
