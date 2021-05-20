@@ -5,9 +5,9 @@
     "version": "1.0.0",
     "description": ""
   },
-  "host": "fish-tracker-api.herokuapp.com",
+  "host": "localhost:3000",
   "basePath": "/api",
-  "tags": ["users","auth"],
+  "tags": [],
   "schemes": [
     "http",
     "https"
@@ -28,7 +28,7 @@
   "paths": {
     "/users/verifywithotp": {
       "post": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -59,7 +59,7 @@
     },
     "/users/updateadmin/{id}": {
       "patch": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -74,7 +74,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "isAdmin\r": {
+                "isAdmin": {
                   "example": "any"
                 }
               }
@@ -91,9 +91,52 @@
         }
       }
     },
+    "/users/registerwithemail": {
+      "post": {
+        "tags": [],
+        "description": "",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/users/registerwithotp": {
       "post": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -131,21 +174,39 @@
         }
       }
     },
-    "/users/getusers": {
+    "/users/getunverifiedusers": {
       "get": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [],
         "responses": {
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/users/getusers": {
+      "get": {
+        "tags": [],
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
     "/users/{id}": {
       "get": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -167,7 +228,7 @@
     },
     "/users/update/{id}": {
       "patch": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -207,7 +268,7 @@
     },
     "/users/delete/{id}": {
       "delete": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -220,13 +281,16 @@
         "responses": {
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
     "/users/createuser": {
       "post": {
-        "tags": ["users"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -263,7 +327,7 @@
     },
     "/auth/refreshtoken": {
       "post": {
-        "tags": ["auth"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -288,7 +352,7 @@
     },
     "/auth/login": {
       "post": {
-        "tags": ["auth"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
@@ -317,13 +381,13 @@
         }
       }
     },
-    "/auth/logout/{id}": {
+    "/auth/logout/{login_id}": {
       "post": {
-        "tags": ["auth"],
+        "tags": [],
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "login_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -341,12 +405,15 @@
     },
     "/auth/getlogins": {
       "get": {
-        "tags": ["auth"],
+        "tags": [],
         "description": "",
         "parameters": [],
         "responses": {
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

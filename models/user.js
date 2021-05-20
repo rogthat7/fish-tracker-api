@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: false
     },
-    isConfirmed: {
+    isVarified: {
         type: Boolean,
         required: true,
         default: false

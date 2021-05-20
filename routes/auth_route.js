@@ -32,9 +32,9 @@ authRouter.post("/auth/refreshtoken", async (req, res) => {
             email: refreshedLogin.email,
             password : refreshedLogin.password,
             isAdmin: refreshedLogin.isAdmin,
-            isConfirmed: refreshedLogin.isConfirmed,
+            isVarified: refreshedLogin.isVarified,
             phoneNumber: refreshedLogin.phoneNumber,
-          }
+          };
           //craete jwt token
           const jwttoken = GenerateAccessTokenForUser(refreshedUser);
           res.status(200).json({
@@ -72,9 +72,9 @@ authRouter.post("/auth/login", async (req, res) => {
               email: validUser.email,
               password : validUser.password,
               isAdmin: validUser.isAdmin,
-              isConfirmed: validUser.isConfirmed,
+              isVarified: validUser.isVarified,
               phoneNumber: validUser.phoneNumber,
-            }
+            };
       
             const accessToken = GenerateAccessTokenForUser(user);
             jwt.sign(

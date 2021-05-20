@@ -5,7 +5,7 @@ const swaggerFile = require('./swagger/swagger_output.json');
 const usersRoute = require('./routes/users_route');
 const authRoute = require('./routes/auth_route');
 const pjson =  require('./package.json');
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 var cors = require('cors');
 const clientTwilio = require('twilio')(process.env.MOBILEOTPACCOUNTID, process.env.MOBILEOTPAUTHTOKEN);
 const winston = require('winston');
@@ -69,12 +69,12 @@ app.use((err, req, res, next)=>{
             message:err.message, 
         },
     });
-})  
+});
 //connect to mongoDB
 mongoose
-    .connect(process.env.MONGODB_URL,{ useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(process.env.MONGODB_LOCAL,{ useNewUrlParser: true, useUnifiedTopology: true })
     .then(()=>{
-        logger.info("connected to "+process.env.MONGODB_URL);
+        logger.info("connected to "+process.env.MONGODB_LOCAL);
     })
     .catch((error)=>{
         logger.error("something went wrong connecting to the db",error);
