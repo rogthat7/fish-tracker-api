@@ -74,7 +74,7 @@ app.use((err, req, res, next)=>{
 mongoose
     .connect(process.env.MONGODB_URL,{ useNewUrlParser: true, useUnifiedTopology: true })
     .then(()=>{
-        logger.info("connected to "+process.env.MONGODB_LOCAL);
+        logger.info("connected to "+process.env.MONGODB_URL);
     })
     .catch((error)=>{
         logger.error("something went wrong connecting to the db",error);
