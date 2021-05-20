@@ -30,7 +30,7 @@ app.get('/api',  async (req, res, next) => {
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({extended:true}));
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use('/api/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
 //craate a logger
