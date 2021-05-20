@@ -15,7 +15,7 @@ const RTOptions = {
   issuer: "fish-tracker-app",
 };
 // Get Token
-authRouter.post("/auth/refreshtoken", isLoggedin, async (req, res) => {
+authRouter.post("/auth/refreshtoken", async (req, res) => {
   const refreshToken = req.body.refreshToken;
   try {
     if (refreshToken == null) return res.sendStatus(401);
