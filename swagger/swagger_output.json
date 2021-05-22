@@ -7,7 +7,7 @@
   },
   "host": "localhost:3000",
   "basePath": "/api",
-  "tags": [],
+  "tags": ["users", "auth"],
   "schemes": [
     "http",
     "https"
@@ -28,7 +28,7 @@
   "paths": {
     "/users/verifywithotp": {
       "post": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -62,7 +62,7 @@
     },
     "/users/updateadmin/{id}": {
       "patch": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -96,7 +96,7 @@
     },
     "/users/registerwithemail": {
       "post": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -136,7 +136,7 @@
     },
     "/users/registerwithphone": {
       "post": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -176,7 +176,7 @@
     },
     "/users/getunverifiedusers": {
       "get": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [],
         "responses": {
@@ -191,7 +191,7 @@
     },
     "/users/getusers": {
       "get": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [],
         "responses": {
@@ -206,7 +206,7 @@
     },
     "/users/{id}": {
       "get": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -228,7 +228,7 @@
     },
     "/users/update/{id}": {
       "patch": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -268,7 +268,7 @@
     },
     "/users/delete/{id}": {
       "delete": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -290,7 +290,7 @@
     },
     "/users/createuser": {
       "post": {
-        "tags": [],
+        "tags": ["users"],
         "description": "",
         "parameters": [
           {
@@ -327,7 +327,7 @@
     },
     "/auth/refreshtoken": {
       "post": {
-        "tags": [],
+        "tags": ["auth"],
         "description": "",
         "parameters": [
           {
@@ -352,7 +352,7 @@
     },
     "/auth/login": {
       "post": {
-        "tags": [],
+        "tags": ["auth"],
         "description": "",
         "parameters": [
           {
@@ -383,7 +383,7 @@
     },
     "/auth/logout/{login_id}": {
       "post": {
-        "tags": [],
+        "tags": ["auth"],
         "description": "",
         "parameters": [
           {
@@ -405,7 +405,7 @@
     },
     "/auth/getlogins": {
       "get": {
-        "tags": [],
+        "tags": ["auth"],
         "description": "",
         "parameters": [],
         "responses": {

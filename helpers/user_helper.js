@@ -5,11 +5,11 @@ function emailExists(email) {
     else return false;
   });
 }
-function PhoneExists(phoneNumber) {
+function phoneExists(phoneNumber) {
     return User.findOne({ phoneNumber: phoneNumber }).then((result) => {
       if (result) return true;
       else return false;
     });
   }
 module.exports.emailExists = emailExists;
-module.exports.PhoneExists = PhoneExists;
+module.exports.PhoneExists = phoneExists;
