@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": ""
   },
-  "host": "localhost:3000",
+  "host": "fish-tracker-api.herokuapp.com",
   "basePath": "/api",
   "tags": ["users", "auth"],
   "schemes": [
