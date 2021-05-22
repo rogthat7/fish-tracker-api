@@ -1,14 +1,22 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 //User Schema
 const unverifiedUserSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: true
-    },
-    emailToken: {
-        type: String,
-        required: true
-    }
+  userId: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: false,
+  },
+  emailToken: {
+    type: String,
+    required: false,
+  },
+  phoneNumber: {
+    type: String,
+    required: false,
+  },
 });
 
-module.exports = mongoose.model('UnverifiedUser',unverifiedUserSchema);
+module.exports = mongoose.model("UnverifiedUser", unverifiedUserSchema);

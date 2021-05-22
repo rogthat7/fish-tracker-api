@@ -32,7 +32,7 @@ authRouter.post("/auth/refreshtoken", async (req, res) => {
             email: refreshedLogin.email,
             password : refreshedLogin.password,
             isAdmin: refreshedLogin.isAdmin,
-            isVarified: refreshedLogin.isVarified,
+            isVerified: refreshedLogin.isVerified,
             phoneNumber: refreshedLogin.phoneNumber,
           };
           //craete jwt token
@@ -72,7 +72,7 @@ authRouter.post("/auth/login", async (req, res) => {
               email: validUser.email,
               password : validUser.password,
               isAdmin: validUser.isAdmin,
-              isVarified: validUser.isVarified,
+              isVerified: validUser.isVerified,
               phoneNumber: validUser.phoneNumber,
             };
       

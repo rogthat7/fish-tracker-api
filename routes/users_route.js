@@ -2,10 +2,10 @@ const express = require("express");
 userRouter = express.Router();
 bodyParser = require("body-parser");
 const User = require("../models/user");
+const UserHelper = require("../helpers/user_helper");
 const UnverifiedUser = require("../models/unverified_user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const createError = require("http-errors");
 require("dotenv").config();
 const clientTwilio = require("twilio")(
   process.env.MOBILEOTPACCOUNTID,
@@ -16,41 +16,78 @@ const { Admin } = require("../middlewares/admin_check");
 const { isLoggedin } = require("../middlewares/login_check");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-var otpGenerator = require('otp-generator');
+var otpGenerator = require("otp-generator");
 
 const SALT_ROUNDS = 12;
 
 //Verify Sent OTP
-userRouter.post("/users/verifywithotp", Authorized, async (req, res) => {
-  const otp = req.body.otp;
-  try {
-    let token = req.headers.authorization.split(" ")[1];
-    jwt.verify(token, process.env.SECRETE, function (err, payload) {
-      if (payload.isVarified == true) res.send("User Already Verified");
-      else {
-        User.findOne({ email: payload.email }, (err, user) => {
-          clientTwilio.verify
-            .services(process.env.MOBILEOTPSERVICEID)
-            .verificationChecks.create({
-              to: `+${payload.phoneNumber}`,
-              code: otp,
-            })
-            .then((data) => {
-              if (data.valid) {
-                user.isVarified = true;
-                user.save().then(() => res.status(200).send(data));
-              } else res.status(400).send(data);
-            })
-            .catch((err) => {
-              res.send("Error: " + err);
+userRouter.post(
+  "/users/verifywithotp",
+  isLoggedin,
+  Authorized,
+  async (req, res) => {
+    const otp = req.body.otp;
+    try {
+      var unverifiedUserId;
+      let token = req.headers.authorization.split(" ")[1];
+      jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRETE,
+        function (err, payload) {
+          if (payload.isVerified == true) res.send("User Already Verified");
+          else {
+            // for email otp verification
+            UnverifiedUser.findOne({ userId: payload.id }, (err, entry) => {
+              if (entry == null)
+                res.status(404).json({
+                  error: "User Not Found!",
+                });
+              else if (entry.phoneNumber == null) {
+                bcrypt.compare(otp, entry.emailToken).then((valid) => {
+                  if (!valid) {
+                    return res.status(401).send("Wrong OTP");
+                  }
+                  User.findById(payload.id, (err, user) => {
+                    if (user != null) {
+                      user.isVerified = true;
+                      UnverifiedUser.findByIdAndDelete(entry.id,(err, userVerified)=>{
+                        if(err) res.status(500).send(err);
+                      });
+                      user.save().then(() => res.status(200).send(user));
+                    }
+                  });
+                });
+              } else {
+                clientTwilio.verify
+                  .services(process.env.MOBILEOTPSERVICEID)
+                  .verificationChecks.create({
+                    to: `+${entry.phoneNumber}`,
+                    code: otp,
+                  })
+                  .then((data) => {
+                    if (data.valid) {
+                        User.findById(entry.id, (err, user) => {
+                        user.isVerified = true;
+                        UnverifiedUser.findByIdAndDelete(entry.id,(err)=>{
+                          if(err) res.status(500).send(err);
+                        });
+                        user.save().then(() => res.status(200).send(user));
+                      });
+                    } else res.status(500).send(data);
+                  })
+                  .catch((err) => {
+                    res.status(404).send(err.message);
+                  });
+              }
             });
-        });
-      }
-    });
-  } catch {
-    res.send("Error: " + err);
+          }
+        }
+      );
+    } catch (err) {
+      res.send("Error: " + err);
+    }
   }
-});
+);
 
 //Updated Admin privilages
 userRouter.patch(
@@ -77,7 +114,6 @@ userRouter.patch(
   }
 );
 
-
 // Post: Create New User with email varification
 userRouter.post("/users/registerwithemail", async (req, res) => {
   try {
@@ -91,49 +127,62 @@ userRouter.post("/users/registerwithemail", async (req, res) => {
       });
       if (req.body.email == null) res.status(400).send();
       else {
-        // generate otp for the user 
-        const otp = otpGenerator.generate(6, { upperCase: true, specialChars: false });
+        // generate otp for the user
+        const otp = otpGenerator.generate(6, {
+          upperCase: true,
+          specialChars: false,
+        });
         // encrypt the otp before it is confirmed
         bcrypt.hash(otp, SALT_ROUNDS, async (err, otphash) => {
-          let unverifiedUser = new UnverifiedUser({
-            email : req.body.email,
-            emailToken : otphash
-          });
-          unverifiedUser.save().then(() => {
-            user.save().then(() => {
+          user
+            .save()
+            .then((savedUser) => {
               // send the email
               const msg = {
                 to: user.email, // Change to your recipient
                 from: "fish-tracker-app@outlook.com", // Change to your verified sender
                 subject: "Verification for Fish-Tracker-App",
                 text: "Your OTP via email Verification code is",
-                html: "Your OTP via email Verification code is <strong><h2>"+otp+"</h2></strong>",
+                html:
+                  "Your OTP via email Verification code is <strong><h2>" +
+                  otp +
+                  "</h2></strong>",
               };
               sgMail
                 .send(msg)
                 .then(() => {
-                  res.status(200).json({message:msg});
+                  let unverifiedUser = new UnverifiedUser({
+                    userId: savedUser._id,
+                    email: req.body.email,
+                    emailToken: otphash,
+                  });
+                  unverifiedUser
+                    .save()
+                    .then(() => {
+                      res.status(201).json({ message: msg });
+                    })
+                    .catch((err) => {
+                      res.status(500).send(err);
+                    });
                 })
                 .catch((error) => {
                   console.error(error);
-                  res.status(500).json({error:error});
+                  res.status(500).json({ error: error });
                 });
-          }).catch((err)=>{
-            res.status(500).send(err);
-          });
-        }).catch((err)=>{
-          res.status(500).send(err);
+            })
+            .catch((err) => {
+              res.status(500).send(err);
+            });
         });
-       });
       }
     });
   } catch (err) {
-    res.status(500).json({error:err});
+    res.status(500).json({ error: err });
   }
 });
 
-// Post: Create New User with otp varification
-userRouter.post("/users/registerwithotp", async (req, res) => {
+// Post: Create New User with otp verification on phone
+userRouter.post("/users/registerwithphone", async (req, res) => {
   try {
     //encrypt the password
     bcrypt.hash(req.body.password, SALT_ROUNDS, async (err, hash) => {
@@ -145,37 +194,49 @@ userRouter.post("/users/registerwithotp", async (req, res) => {
       });
       if (req.body.email == null) res.status(400).send();
       else {
-        clientTwilio
-          .verify
+        clientTwilio.verify
           .services(process.env.MOBILEOTPSERVICEID)
-          .verifications
-          .create({
+          .verifications.create({
             to: `+${req.body.phoneNumber}`,
-            channel: "sms"
+            channel: "sms",
           })
           .then((data) => {
-              user.save().then(() => {
-              res.status(201).send(data);
-            }).catch((error) => {
-              res.status(500).send(error._message);
-            });
+            user
+              .save()
+              .then((saveduser) => {
+                let unverifiedUser = new UnverifiedUser({
+                  userId: saveduser._id,
+                  phoneNumber: req.body.phoneNumber,
+                });
+                unverifiedUser.save().then(() => {
+                  res.status(201).send(data);
+                });
+              })
+              .catch((error) => {
+                res.status(500).send(error._message);
+              });
           });
       }
     });
   } catch (err) {
-    res.status(500).json({error:err});
+    res.status(500).json({ error: err });
   }
 });
 
 // Get Unverified Users
-userRouter.get("/users/getunverifiedusers", isLoggedin, Authorized, async (req, res) => {
-  try {
-    const unverifiedUsers = await UnverifiedUser.find();
-    res.json(unverifiedUsers);
-  } catch (error) {
-    res.send("Error: " + error);
+userRouter.get(
+  "/users/getunverifiedusers",
+  isLoggedin,
+  Authorized,
+  async (req, res) => {
+    try {
+      const unverifiedUsers = await UnverifiedUser.find();
+      res.json(unverifiedUsers);
+    } catch (error) {
+      res.send("Error: " + error);
+    }
   }
-});
+);
 
 // Get
 userRouter.get("/users/getusers", isLoggedin, Authorized, async (req, res) => {
@@ -253,10 +314,13 @@ userRouter.post("/users/createuser", async (req, res) => {
         email: req.body.email,
         phoneNumber: req.body.phoneNumber,
         password: hash,
-        isVarified: true,
+        isVerified: true,
         isAdmin: true,
       });
-
+      if(UserHelper.emailExists(user.email))
+        return res.status(400).send("Email Already Exists.");
+      if(UserHelper.phoneExists(user.phoneNumber))
+        return res.status(400).send("Phone Number Exists.");
       const a1 = await user
         .save()
         .then((a1) => {

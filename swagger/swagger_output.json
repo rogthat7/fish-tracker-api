@@ -53,6 +53,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -119,9 +122,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "201": {
             "description": "Created"
           },
@@ -134,7 +134,7 @@
         }
       }
     },
-    "/users/registerwithotp": {
+    "/users/registerwithphone": {
       "post": {
         "tags": [],
         "description": "",
